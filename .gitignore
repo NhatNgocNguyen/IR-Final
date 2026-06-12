@@ -14,4 +14,4 @@ __pycache__/
 .Python
 build/
 dist/
-.DS_Store.DS_Store
+.DS_Store
