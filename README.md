@@ -26,24 +26,10 @@ Bao gồm: FastAPI, uvicorn, OpenAI SDK, sentence-transformers, numpy, rank-bm25
 
 ## 3. Tải embedding models
 
-Chạy **một lần** khi còn internet, từ thư mục `IR-Final/`:
+Chạy **một lần** khi còn internet:
 
 ```bash
 python download_model.py
 ```
 
-Tải cả hai model:
-
-| Target | Model | Lưu ở đâu |
-|---|---|---|
-| `nhat` | `paraphrase-multilingual-MiniLM-L12-v2` | Hugging Face cache (~420 MB) |
-| `bell` | `keepitreal/vietnamese-sbert` | `bell/models/vietnamese-sbert/` |
-
-Chỉ tải một project:
-
-```bash
-python download_model.py --target nhat
-python download_model.py --target bell
-```
-
-Script sẽ chạy smoke test sau khi tải xong. Nếu thấy `✅ Downloaded`, có thể chạy server offline (embedding). Teacher LLM proxy vẫn cần LAN lúc thi.
+Thêm model mới trong `download_model.py` → list `MODELS`.
