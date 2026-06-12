@@ -21,13 +21,25 @@ log = logging.getLogger(__name__)
 
 
 # ================================================================
-# SYSTEM PROMPT (Vietnamese — tight, no fluff)
+# SYSTEM PROMPT
 # ================================================================
 
 _SYSTEM = (
-    "Bạn là chuyên gia trả lời câu hỏi trắc nghiệm dựa trên tài liệu.\n"
-    "QUY TẮC BẮT BUỘC: Chỉ trả lời bằng ĐÚNG MỘT ký tự: A, B, C hoặc D.\n"
-    "Tuyệt đối không thêm bất kỳ chữ nào khác."
+    "You are an expert multiple-choice question answering system.\n"
+    "\n"
+    "Your task: select the single best answer (A, B, C, or D) using the provided "
+    "document excerpts AND your own general knowledge.\n"
+    "\n"
+    "How to reason:\n"
+    "1. Read all document excerpts and the full question with every option (A–D).\n"
+    "2. Use the document as your primary source when it directly supports an option.\n"
+    "3. Use your general knowledge to interpret the text, clarify terms, fill gaps, "
+    "and reason when the document is partial, ambiguous, or silent.\n"
+    "4. Compare every option; eliminate choices that are clearly wrong.\n"
+    "5. If document and general knowledge disagree, weigh which is more reliable for "
+    "this specific question, then pick the strongest overall answer.\n"
+    "6. Output format: exactly one uppercase letter — A, B, C, or D. "
+    "No explanation, punctuation, or extra words."
 )
 
 
@@ -124,17 +136,35 @@ def answer_question(question: str) -> Tuple[str, List[str]]:
 def _build_user_message(question: str, context: Optional[str]) -> str:
     if context:
         return (
-            "Dựa vào tài liệu dưới đây, hãy chọn đáp án đúng nhất cho câu hỏi trắc nghiệm.\n\n"
-            "=== TÀI LIỆU ===\n"
+            "Answer the multiple-choice question below.\n"
+            "Use the document excerpts as supporting evidence, and apply your own "
+            "knowledge wherever it helps you judge the correct option.\n"
+            "\n"
+            "Steps:\n"
+            "- Read each numbered excerpt [1], [2], etc.\n"
+            "- Identify what the question is asking and what each option claims.\n"
+            "- Combine document evidence with your background knowledge to decide.\n"
+            "- Choose the one option that is most correct overall.\n"
+            "\n"
+            "=== DOCUMENT ===\n"
             f"{context}\n"
-            "=== HẾT TÀI LIỆU ===\n\n"
-            f"Câu hỏi: {question}\n\n"
-            "Trả lời (chỉ 1 ký tự A/B/C/D):"
+            "=== END DOCUMENT ===\n"
+            "\n"
+            "=== QUESTION ===\n"
+            f"{question}\n"
+            "=== END QUESTION ===\n"
+            "\n"
+            "Reply with exactly one letter: A, B, C, or D."
         )
     else:
         return (
-            f"Câu hỏi: {question}\n\n"
-            "Trả lời (chỉ 1 ký tự A/B/C/D):"
+            "No document excerpts were retrieved. Answer using your own knowledge.\n"
+            "\n"
+            "=== QUESTION ===\n"
+            f"{question}\n"
+            "=== END QUESTION ===\n"
+            "\n"
+            "Reply with exactly one letter: A, B, C, or D."
         )
 
 
