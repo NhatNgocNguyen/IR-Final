@@ -1,0 +1,16 @@
+.python-version
+pyproject.toml
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+env/
+ENV/
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+build/
+dist/

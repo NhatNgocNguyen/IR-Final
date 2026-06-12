@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+openai
+sentence-transformers
+numpy
+scikit-learn
+rank-bm25
+pydantic
+requests
