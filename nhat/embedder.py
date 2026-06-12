@@ -3,7 +3,7 @@ embedder.py — Sentence-transformer embedding wrapper.
 
 • Lazy-loads the model on first use (avoids slow startup)
 • L2-normalizes all vectors → cosine similarity = dot product (faster)
-• Supports Vietnamese via paraphrase-multilingual-MiniLM-L12-v2
+• Supports Vietnamese via keepitreal/vietnamese-sbert
 • Falls back gracefully to random vectors if model unavailable
   (should never happen in exam — run download_model.py first)
 """
@@ -18,7 +18,7 @@ from config import EMBEDDING_MODEL, EMBEDDING_BATCH_SIZE
 log = logging.getLogger(__name__)
 
 _model = None          # singleton
-_model_dim: int = 384  # MiniLM-L12 output dim
+_model_dim: int = 768  # vietnamese-sbert output dim
 
 
 def get_model():

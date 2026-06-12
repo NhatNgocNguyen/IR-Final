@@ -1,7 +1,6 @@
 import sys
 
 MODELS = [
-    "paraphrase-multilingual-MiniLM-L12-v2",
     "keepitreal/vietnamese-sbert",
 ]
 

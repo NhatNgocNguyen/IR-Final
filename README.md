@@ -14,13 +14,17 @@ Hướng dẫn cài dependencies và tải embedding model cho các student serv
 
 ## 2. Cài dependencies
 
-Một file `requirements.txt` gộp đủ cho cả **nhat**, **bell**, và **van_linh**:
+Từ thư mục gốc `IR-Final/`, cài mọi `requirements.txt` trong repo:
 
 ```bash
-pip install -r requirements.txt
+find . -name "requirements.txt" -exec uv pip install -r {} \;
 ```
 
-Bao gồm: FastAPI, uvicorn, OpenAI SDK, sentence-transformers, numpy, rank-bm25, requests, httpx, python-dotenv, langchain, chromadb.
+Hoặc dùng `pip`:
+
+```bash
+find . -name "requirements.txt" -exec pip install -r {} \;
+```
 
 ---
 

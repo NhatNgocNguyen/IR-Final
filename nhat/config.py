@@ -69,11 +69,8 @@ DENSE_WEIGHT = 0.60
 # ================================================================
 # EMBEDDING MODEL
 # ================================================================
-# paraphrase-multilingual-MiniLM-L12-v2:
-#   • 118 M params, ~420 MB
-#   • supports 50+ languages including Vietnamese
-#   • fast enough to embed 100–300 chunks in < 30 s on CPU
-EMBEDDING_MODEL      = "paraphrase-multilingual-MiniLM-L12-v2"
+# keepitreal/vietnamese-sbert — PhoBERT-based, tuned for Vietnamese
+EMBEDDING_MODEL      = "keepitreal/vietnamese-sbert"
 EMBEDDING_BATCH_SIZE = 64
 
 # ================================================================

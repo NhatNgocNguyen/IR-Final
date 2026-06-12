@@ -14,7 +14,7 @@ FastAPI server cho bài thi RAG offline (PTIT). Server nhận tài liệu, lập
 | API server | `main.py` | Endpoints `/upload`, `/ask`, `/health` |
 | RAG pipeline | `rag_pipeline.py` | Điều phối upload + trả lời |
 | Chunking | `chunker.py` | Chia văn bản tiếng Việt theo đoạn/câu |
-| Embedding | `embedder.py` | `paraphrase-multilingual-MiniLM-L12-v2` |
+| Embedding | `embedder.py` | `keepitreal/vietnamese-sbert` |
 | Vector DB | `vectordb.py` | Hybrid BM25 + cosine similarity |
 | Retrieval | `retriever.py` | Tìm kiếm, de-duplicate, lắp context |
 | LLM client | `llm_client.py` | Gọi teacher proxy (OpenAI-compatible) |
@@ -36,7 +36,7 @@ pip install -r requirements.txt
 
 ## 2. Tải model embedding (chạy một lần khi còn internet)
 
-Model ~420 MB, được cache vào thư mục Hugging Face local để thi offline.
+Model được cache vào thư mục Hugging Face local để thi offline.
 
 ```bash
 python download_model.py

@@ -16,7 +16,7 @@ from config import EMBEDDING_MODEL
 
 def main() -> None:
     print(f"Downloading embedding model: {EMBEDDING_MODEL}")
-    print("(This requires internet access — ~420 MB download)")
+    print("(This requires internet access)")
     print()
 
     start = time.time()
