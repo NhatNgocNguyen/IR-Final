@@ -1,5 +1,7 @@
 import re
 import time
+import os
+import shutil
 
 from fastapi import FastAPI
 
@@ -15,7 +17,11 @@ from schemas import UploadRequest, UploadResponse, AskRequest, AskResponse
 
 app = FastAPI()
 
+# Thư mục lưu vector database
+VECTOR_DB_DIR = "./vector_db"
+
 vector_db = None
+
 
 embedding_model = HuggingFaceEmbeddings(
     model_name="./models/vietnamese-sbert",
@@ -23,11 +29,39 @@ embedding_model = HuggingFaceEmbeddings(
     encode_kwargs={"normalize_embeddings": True}
 )
 
+
 client = OpenAI(
     base_url=TEACHER_PROXY_URL,
     api_key=STUDENT_ID,
     timeout=25.0
 )
+
+
+def load_vector_db():
+    """
+    Load vector DB đã lưu từ disk nếu tồn tại.
+    Dùng khi server vừa bật lên.
+    """
+    global vector_db
+
+    if os.path.exists(VECTOR_DB_DIR):
+        try:
+            print("[INIT] Loading existing vector DB...")
+            vector_db = Chroma(
+                persist_directory=VECTOR_DB_DIR,
+                embedding_function=embedding_model
+            )
+            print("[INIT] Vector DB loaded successfully.")
+        except Exception as e:
+            print(f"[INIT] Failed to load vector DB: {e}")
+            vector_db = None
+    else:
+        print("[INIT] No existing vector DB found.")
+
+
+@app.on_event("startup")
+def startup_event():
+    load_vector_db()
 
 
 @app.middleware("http")
@@ -44,7 +78,6 @@ def upload(req: UploadRequest):
 
     try:
         print("\n========== [UPLOAD RECEIVED] ==========")
-
         print(f"[UPLOAD] doc_id = {req.doc_id}")
 
         print("\n========== FULL DOCUMENT ==========\n")
@@ -63,17 +96,31 @@ def upload(req: UploadRequest):
 
         print(f"[UPLOAD] total chunks = {len(docs)}")
 
-        # xem thử từng chunk
         for i, doc in enumerate(docs[:5]):
             print(f"\n----- CHUNK {i} -----")
             print(doc.page_content[:500])
 
+        # Nếu đã có vector DB cũ thì xóa để tạo lại từ document mới
+        if os.path.exists(VECTOR_DB_DIR):
+            print("[UPLOAD] Removing old vector DB...")
+            shutil.rmtree(VECTOR_DB_DIR)
+
+        print("[UPLOAD] Creating vector DB...")
+
         vector_db = Chroma.from_documents(
             documents=docs,
-            embedding=embedding_model
+            embedding=embedding_model,
+            persist_directory=VECTOR_DB_DIR
         )
 
-        print("[UPLOAD] vector db created")
+        # Một số bản Chroma tự persist, nhưng gọi thêm để chắc chắn
+        try:
+            vector_db.persist()
+        except Exception:
+            pass
+
+        print("[UPLOAD] vector DB created and saved")
+        print(f"[UPLOAD] saved at: {os.path.abspath(VECTOR_DB_DIR)}")
 
         return UploadResponse(
             status="success",
@@ -98,11 +145,18 @@ def ask(req: AskRequest):
     start_time = time.time()
 
     try:
-        print("\n========== [ASK RECEIVED] ==========")
         print(f"[ASK] question = {req.question}")
+        print(f"[ASK] note = {req.note}")
+        print(f"[ASK] options = {req.options}")
+
+        # Nếu server mới bật lại mà vector_db chưa nằm trong RAM,
+        # thử load lại từ thư mục vector_db
+        if vector_db is None:
+            print("[ASK] vector_db is None, trying to load from disk...")
+            load_vector_db()
 
         if vector_db is None:
-            print("[ASK] vector_db is None")
+            print("[ASK] vector_db still None")
             return AskResponse(answer="A", sources=[])
 
         retrieved_docs = vector_db.similarity_search(req.question, k=5)
@@ -116,24 +170,24 @@ def ask(req: AskRequest):
             [doc.page_content for doc in retrieved_docs]
         )
 
-        prompt = fprompt = f"""
-        Bạn là hệ thống trả lời câu hỏi trắc nghiệm dựa HOÀN TOÀN vào tài liệu được cung cấp.
+        prompt = f"""
+Bạn là hệ thống trả lời câu hỏi trắc nghiệm dựa HOÀN TOÀN vào tài liệu được cung cấp.
 
-        QUY TẮC:
-        1. Chỉ sử dụng thông tin trong CONTEXT.
-        2. Không suy đoán bằng kiến thức bên ngoài.
-        3. Nếu thấy đáp án xuất hiện trực tiếp trong CONTEXT thì chọn đúng nguyên văn.
-        4. Chỉ trả về duy nhất 1 ký tự: A hoặc B hoặc C hoặc D.
-        5. Không giải thích.
+QUY TẮC:
+1. Chỉ sử dụng thông tin trong CONTEXT.
+2. Không suy đoán bằng kiến thức bên ngoài.
+3. Nếu thấy đáp án xuất hiện trực tiếp trong CONTEXT thì chọn đúng nguyên văn.
+4. Chỉ trả về duy nhất 1 ký tự: A hoặc B hoặc C hoặc D.
+5. Không giải thích.
 
-        ================ CONTEXT ================
-        {context}
+================ CONTEXT ================
+{context}
 
-        ================ QUESTION ================
-        {req.question}
+================ QUESTION ================
+{req.question}
 
-        ================ ANSWER ================
-        """
+================ ANSWER ================
+"""
 
         res = client.chat.completions.create(
             model="gpt-4o-mini",
