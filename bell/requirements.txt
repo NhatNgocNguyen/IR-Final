@@ -9,7 +9,7 @@ langchain
 langchain-community
 langchain-text-splitters
 chromadb
-
+rank-bm25
 # Embedding model
 sentence-transformers
 transformers
