@@ -1,0 +1,23 @@
+# Core API server
+fastapi
+uvicorn[standard]
+requests
+python-dotenv
+
+# LangChain + Vector database
+langchain
+langchain-community
+langchain-text-splitters
+chromadb
+
+# Embedding model
+sentence-transformers
+transformers
+torch
+
+# OpenAI SDK
+openai
+
+# Optional utilities
+numpy
+pydantic
