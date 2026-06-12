@@ -1,9 +1,14 @@
 fastapi
 uvicorn[standard]
+pydantic
 openai
 sentence-transformers
 numpy
 scikit-learn
 rank-bm25
-pydantic
 requests
+httpx
+python-dotenv
+langchain-text-splitters
+langchain-community
+chromadb
