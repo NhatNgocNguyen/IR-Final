@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional, List
 
 
@@ -14,9 +14,12 @@ class UploadResponse(BaseModel):
 
 
 class AskRequest(BaseModel):
+    id: Optional[int] = None
     question: str
+    note: Optional[str] = None
+    options: Optional[List[str]] = None
 
 
 class AskResponse(BaseModel):
     answer: str
-    sources: List[str] = []
+    sources: List[str] = Field(default_factory=list)
