@@ -23,3 +23,7 @@ class AskRequest(BaseModel):
 class AskResponse(BaseModel):
     answer: str
     sources: List[str] = Field(default_factory=list)
+
+
+class EvaluateRequest(BaseModel):
+    document_received: Optional[bool] = False
