@@ -1,6 +1,6 @@
-fastapi
-httpx
-openai
-python-dotenv
-sentence-transformers
-uvicorn
+fastapi==0.115.12
+httpx==0.28.1
+openai==1.84.0
+python-dotenv==1.1.0
+sentence-transformers==5.5.0
+uvicorn==0.34.2

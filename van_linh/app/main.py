@@ -32,8 +32,16 @@ app = FastAPI(title="Student RAG Server", lifespan=lifespan)
 
 
 @app.get("/health")
-def healthcheck() -> dict[str, str]:
-    return {"status": "ok"}
+def healthcheck() -> dict[str, str | bool | int | None]:
+    rag_service: RagService = app.state.rag_service
+    state = rag_service.index_state
+    return {
+        "status": "ok",
+        "rag_ready": state.ready,
+        "doc_id": state.doc_id,
+        "chunk_count": state.chunk_count,
+        "index_persisted": state.index_persisted,
+    }
 
 
 @app.post("/upload", response_model=UploadResponse)
@@ -51,7 +59,7 @@ def upload_document(payload: UploadRequest) -> UploadResponse:
 
 @app.post("/ask", response_model=AskResponse)
 def ask_question(payload: AskRequest) -> AskResponse:
-    LOGGER.info("Received /ask request")
+    LOGGER.info("Received /ask request with question: %s", payload.question)
     rag_service: RagService = app.state.rag_service
     llm_service: LlmService = app.state.llm_service
 

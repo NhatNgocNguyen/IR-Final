@@ -31,6 +31,9 @@ htmlcov/
 *.log
 *.out
 *.pid
+storage/index/*.json
+storage/index/*.npy
+!storage/index/.gitkeep
 
 # Jupyter
 .ipynb_checkpoints/

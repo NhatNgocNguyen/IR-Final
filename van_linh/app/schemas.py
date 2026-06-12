@@ -46,26 +46,28 @@ class RegisterPayload(BaseModel):
 
 
 class RegisterResponse(BaseModel):
-    status: str | None = None
-    message: str | None = None
-    student_id: str | None = None
-    server_url: str | None = None
+    message: str
+    student_id: str
+    server_url: str
 
 
 class EvaluateResponse(BaseModel):
-    student_id: str | None = None
-    score: float | None = None
-    status: str | None = None
-    detail: list[dict] | list[str] | None = None
+    message: str
+    final_score: float
+
+
+class EvaluateRequest(BaseModel):
+    document_received: bool = False
 
 
 class ResetResponse(BaseModel):
     status: str
     message: str
+    score: float
 
 
 class ResultResponse(BaseModel):
-    student_id: str | None = None
-    score: float | None = None
-    status: str | None = None
-    current_question: int | None = None
+    student_id: str
+    score: float
+    status: str
+    current_question: int
